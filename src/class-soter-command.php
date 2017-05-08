@@ -64,6 +64,24 @@ class Soter_Command {
 	}
 
 	/**
+	 * @subcommand check-plugins
+	 */
+	public function check_plugins( $_, $assoc_args ) {
+		$this->start_progress_bar( $assoc_args, $this->checker->get_plugin_count() );
+
+		try {
+			$vulnerabilities = $this->checker->check_plugins();
+		} catch ( \RuntimeException $e ) {
+			// @todo This exits... What happens to the progress bar?
+			WP_CLI::error( $e->getMessage() );
+		}
+
+		$this->finish_progress_bar();
+
+		$this->display_results( $vulnerabilities, $assoc_args );
+	}
+
+	/**
 	 * Check a theme for vulnerabilities.
 	 *
 	 * ## OPTIONS
@@ -115,6 +133,24 @@ class Soter_Command {
 	}
 
 	/**
+	 * @subcommand check-themes
+	 */
+	public function check_themes( $_, $assoc_args ) {
+		$this->start_progress_bar( $assoc_args, $this->checker->get_theme_count() );
+
+		try {
+			$vulnerabilities = $this->checker->check_themes();
+		} catch ( \RuntimeException $e ) {
+			// @todo This exits... What happens to $progress?
+			WP_CLI::error( $e->getMessage() );
+		}
+
+		$this->finish_progress_bar();
+
+		$this->display_results( $vulnerabilities, $assoc_args );
+	}
+
+	/**
 	 * Check a version of WordPress for vulnerabilities.
 	 *
 	 * ## OPTIONS
@@ -160,6 +196,27 @@ class Soter_Command {
 	}
 
 	/**
+	 * @subcommand check-wordpresses
+	 */
+	public function check_wordpresses( $_, $assoc_args ) {
+		$this->start_progress_bar(
+			$assoc_args,
+			$this->checker->get_wordpress_count()
+		);
+
+		try {
+			$vulnerabilities = $this->checker->check_wordpress();
+		} catch ( \RuntimeException $e ) {
+			// @todo This exits... What happens to $progress?
+			WP_CLI::error( $e->getMessage() );
+		}
+
+		$this->finish_progress_bar();
+
+		$this->display_results( $vulnerabilities, $assoc_args );
+	}
+
+	/**
 	 * Check a full site for vulnerabilities.
 	 *
 	 * ## OPTIONS
@@ -188,32 +245,19 @@ class Soter_Command {
 	 * @param  array $assoc_args Associative args.
 	 */
 	public function check_site( array $_, array $assoc_args ) {
-		$package_count = $this->checker->get_package_count();
+		$this->start_progress_bar(
+			$assoc_args,
+			$this->checker->get_package_count()
+		);
 
-		// We don't want to display the progress bar unless in standard format.
-		$show_progress = ! isset( $assoc_args['format'] )
-			|| 'standard' === $assoc_args['format'];
-
-		if ( $show_progress ) {
-			$progress = WP_CLI\Utils\make_progress_bar(
-				sprintf( 'Checking %s packages', $package_count ),
-				$package_count
-			);
-
-			$ticker = function() use ( $progress ) {
-				$progress->tick();
-			};
-
-			add_action( 'soter_core_check_package_complete', $ticker );
+		try {
+			$vulnerabilities = $this->checker->check_site();
+		} catch ( \RuntimeException $e ) {
+			// @todo This exits... What happens to $progress?
+			WP_CLI::error( $e->getMessage() );
 		}
 
-		$vulnerabilities = $this->checker->check_site();
-
-		if ( $show_progress ) {
-			remove_action( 'soter_core_check_package_complete', $ticker );
-
-			$progress->finish();
-		}
+		$this->finish_progress_bar();
 
 		$this->display_results( $vulnerabilities, $assoc_args );
 	}
@@ -386,8 +430,48 @@ class Soter_Command {
 	 * @return string
 	 */
 	protected function warning( $text ) {
-		return WP_CLI::colorize(
-			'%1' . $text . '%n' . "\n"
+		return WP_CLI::colorize( '%1' . $text . '%n' . "\n" );
+	}
+
+	protected $progress_bar = null;
+	protected $progress_ticker = null;
+
+	protected function start_progress_bar( $assoc_args, $package_count ) {
+		if (
+			! is_null( $this->progress_bar )
+			|| ! is_null( $this->progress_ticker )
+		) {
+			// @todo
+			WP_CLI::error( 'Too much progress for one request!' );
+		}
+
+		if (
+			isset( $assoc_args['format'] )
+			&& 'standard' !== $assoc_args['format']
+		) {
+			return;
+		}
+
+		$this->progress_bar = $progress_bar = WP_CLI\Utils\make_progress_bar(
+			sprintf( 'Checking %s packages', $package_count ),
+			$package_count
 		);
+
+		$this->progress_ticker = function() use ( $progress_bar ) {
+			$progress_bar->tick();
+		};
+
+		add_action( 'soter_core_check_package_complete', $this->progress_ticker );
+	}
+
+	protected function finish_progress_bar() {
+		if ( is_null( $this->progress_bar ) || is_null( $this->progress_ticker ) ) {
+			return;
+		}
+
+		// @todo Probably not necessary to remove action...
+		remove_action( 'soter_core_check_package_complete', $this->progress_ticker );
+
+		$this->progress_bar->finish();
 	}
 }
