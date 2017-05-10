@@ -86,6 +86,9 @@ class Soter_Command {
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 *
+	 * [--ignore=<ignore>]
+	 * : Comma separated list of plugin slugs to ignore.
+	 *
 	 * @subcommand check-plugins
 	 *
 	 * @param  array $_          Unused positional args.
@@ -98,7 +101,9 @@ class Soter_Command {
 				$this->checker->get_plugin_count()
 			);
 
-			$vulnerabilities = $this->checker->check_plugins();
+			$vulnerabilities = $this->checker->check_plugins(
+				$this->get_ignored_slugs( $assoc_args )
+			);
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
@@ -181,6 +186,9 @@ class Soter_Command {
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 *
+	 * [--ignore=<ignore>]
+	 * : Comma separated list of theme slugs to ignore.
+	 *
 	 * @subcommand check-themes
 	 *
 	 * @param  array $_          Unused positional args.
@@ -193,7 +201,9 @@ class Soter_Command {
 				$this->checker->get_theme_count()
 			);
 
-			$vulnerabilities = $this->checker->check_themes();
+			$vulnerabilities = $this->checker->check_themes(
+				$this->get_ignored_slugs( $assoc_args )
+			);
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
@@ -270,6 +280,9 @@ class Soter_Command {
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 *
+	 * [--ignore=<ignore>]
+	 * : Comma separated list of WordPress slugs to ignore - WordPress slugs are equivalent to the version stripped of any non-numeric characters (e.g. 4.7.4 becomes 474).
+	 *
 	 * @subcommand check-wordpresses
 	 *
 	 * @param  array $_          Unused positional args.
@@ -282,7 +295,9 @@ class Soter_Command {
 				$this->checker->get_wordpress_count()
 			);
 
-			$vulnerabilities = $this->checker->check_wordpress();
+			$vulnerabilities = $this->checker->check_wordpress(
+				$this->get_ignored_slugs( $assoc_args )
+			);
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
@@ -314,6 +329,9 @@ class Soter_Command {
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 *
+	 * [--ignore=<ignore>]
+	 * : Comma separated list of WordPress slugs to ignore. Note that WordPress slugs are equivalent to the version stripped of any non-numeric characters (e.g. 4.7.4 becomes 474).
+	 *
 	 * @subcommand check-site
 	 *
 	 * @param  array $_          Unused positional args.
@@ -326,7 +344,9 @@ class Soter_Command {
 				$this->checker->get_package_count()
 			);
 
-			$vulnerabilities = $this->checker->check_site();
+			$vulnerabilities = $this->checker->check_site(
+				$this->get_ignored_slugs( $assoc_args )
+			);
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
@@ -546,5 +566,15 @@ class Soter_Command {
 		remove_action( 'soter_core_check_package_complete', $this->progress_ticker );
 
 		$this->progress_bar->finish();
+	}
+
+	protected function get_ignored_slugs( $assoc_args ) {
+		$ignored = WP_CLI\Utils\get_flag_value( $assoc_args, 'ignore' );
+
+		if ( ! $ignored ) {
+			return [];
+		}
+
+		return array_map( 'trim', explode( ',', $ignored ) );
 	}
 }
