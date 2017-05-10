@@ -50,10 +50,10 @@ class Soter_Command {
 	 * @param  array $assoc_args Associative args.
 	 */
 	public function check_plugin( $args, $assoc_args ) {
-		$plugin = $args[0];
-		$version = isset( $args[1] ) ? $args[1] : null;
-
 		try {
+			$plugin = $args[0];
+			$version = isset( $args[1] ) ? $args[1] : null;
+
 			$response = $this->checker->get_client()->plugins( $plugin );
 			$vulnerabilities = $response->get_vulnerabilities_by_version( $version );
 
@@ -64,21 +64,47 @@ class Soter_Command {
 	}
 
 	/**
+	 * Check all currently installed plugins for vulnerabilities.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--format=<format>]
+	 * : Results output format.
+	 * ---
+	 * default: standard
+	 * options:
+	 *   - count
+	 *   - csv
+	 *   - ids
+	 *   - json
+	 *   - standard
+	 *   - table
+	 *   - yaml
+	 *   - yml
+	 * ---
+	 *
+	 * [--fields=<fields>]
+	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 *
 	 * @subcommand check-plugins
+	 *
+	 * @param  array $_          Unused positional args.
+	 * @param  array $assoc_args Associative args.
 	 */
 	public function check_plugins( $_, $assoc_args ) {
-		$this->start_progress_bar( $assoc_args, $this->checker->get_plugin_count() );
-
 		try {
+			$this->start_progress_bar(
+				$assoc_args,
+				$this->checker->get_plugin_count()
+			);
+
 			$vulnerabilities = $this->checker->check_plugins();
+
+			$this->finish_progress_bar();
+			$this->display_results( $vulnerabilities, $assoc_args );
 		} catch ( \RuntimeException $e ) {
-			// @todo This exits... What happens to the progress bar?
 			WP_CLI::error( $e->getMessage() );
 		}
-
-		$this->finish_progress_bar();
-
-		$this->display_results( $vulnerabilities, $assoc_args );
 	}
 
 	/**
@@ -119,10 +145,10 @@ class Soter_Command {
 	 * @param  array $assoc_args Associative args.
 	 */
 	public function check_theme( $args, $assoc_args ) {
-		$theme = $args[0];
-		$version = isset( $args[1] ) ? $args[1] : null;
-
 		try {
+			$theme = $args[0];
+			$version = isset( $args[1] ) ? $args[1] : null;
+
 			$response = $this->checker->get_client()->themes( $theme );
 			$vulnerabilities = $response->get_vulnerabilities_by_version( $version );
 
@@ -133,21 +159,47 @@ class Soter_Command {
 	}
 
 	/**
+	 * Check all currently installed themes for vulnerabilities.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--format=<format>]
+	 * : Results output format.
+	 * ---
+	 * default: standard
+	 * options:
+	 *   - count
+	 *   - csv
+	 *   - ids
+	 *   - json
+	 *   - standard
+	 *   - table
+	 *   - yaml
+	 *   - yml
+	 * ---
+	 *
+	 * [--fields=<fields>]
+	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 *
 	 * @subcommand check-themes
+	 *
+	 * @param  array $_          Unused positional args.
+	 * @param  array $assoc_args Associative args.
 	 */
 	public function check_themes( $_, $assoc_args ) {
-		$this->start_progress_bar( $assoc_args, $this->checker->get_theme_count() );
-
 		try {
+			$this->start_progress_bar(
+				$assoc_args,
+				$this->checker->get_theme_count()
+			);
+
 			$vulnerabilities = $this->checker->check_themes();
+
+			$this->finish_progress_bar();
+			$this->display_results( $vulnerabilities, $assoc_args );
 		} catch ( \RuntimeException $e ) {
-			// @todo This exits... What happens to $progress?
 			WP_CLI::error( $e->getMessage() );
 		}
-
-		$this->finish_progress_bar();
-
-		$this->display_results( $vulnerabilities, $assoc_args );
 	}
 
 	/**
@@ -196,24 +248,47 @@ class Soter_Command {
 	}
 
 	/**
+	 * Check the currently installed version of WordPress for vulnerabilities.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--format=<format>]
+	 * : Results output format.
+	 * ---
+	 * default: standard
+	 * options:
+	 *   - count
+	 *   - csv
+	 *   - ids
+	 *   - json
+	 *   - standard
+	 *   - table
+	 *   - yaml
+	 *   - yml
+	 * ---
+	 *
+	 * [--fields=<fields>]
+	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 *
 	 * @subcommand check-wordpresses
+	 *
+	 * @param  array $_          Unused positional args.
+	 * @param  array $assoc_args Associative args.
 	 */
 	public function check_wordpresses( $_, $assoc_args ) {
-		$this->start_progress_bar(
-			$assoc_args,
-			$this->checker->get_wordpress_count()
-		);
-
 		try {
+			$this->start_progress_bar(
+				$assoc_args,
+				$this->checker->get_wordpress_count()
+			);
+
 			$vulnerabilities = $this->checker->check_wordpress();
+
+			$this->finish_progress_bar();
+			$this->display_results( $vulnerabilities, $assoc_args );
 		} catch ( \RuntimeException $e ) {
-			// @todo This exits... What happens to $progress?
 			WP_CLI::error( $e->getMessage() );
 		}
-
-		$this->finish_progress_bar();
-
-		$this->display_results( $vulnerabilities, $assoc_args );
 	}
 
 	/**
@@ -245,21 +320,19 @@ class Soter_Command {
 	 * @param  array $assoc_args Associative args.
 	 */
 	public function check_site( array $_, array $assoc_args ) {
-		$this->start_progress_bar(
-			$assoc_args,
-			$this->checker->get_package_count()
-		);
-
 		try {
+			$this->start_progress_bar(
+				$assoc_args,
+				$this->checker->get_package_count()
+			);
+
 			$vulnerabilities = $this->checker->check_site();
+
+			$this->finish_progress_bar();
+			$this->display_results( $vulnerabilities, $assoc_args );
 		} catch ( \RuntimeException $e ) {
-			// @todo This exits... What happens to $progress?
 			WP_CLI::error( $e->getMessage() );
 		}
-
-		$this->finish_progress_bar();
-
-		$this->display_results( $vulnerabilities, $assoc_args );
 	}
 
 	/**
