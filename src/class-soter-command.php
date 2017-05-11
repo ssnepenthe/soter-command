@@ -41,9 +41,9 @@ class Soter_Command {
 	 * ---
 	 *
 	 * [--fields=<fields>]
-	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * : Comma separated list of fields to show. Valid fields include slug, id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 * ---
-	 * default: title,vuln_type,fixed_in
+	 * default: slug,title,vuln_type,fixed_in
 	 *
 	 * @subcommand check-plugin
 	 *
@@ -83,9 +83,9 @@ class Soter_Command {
 	 * ---
 	 *
 	 * [--fields=<fields>]
-	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * : Comma separated list of fields to show. Valid fields include slug, id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 * ---
-	 * default: title,vuln_type,fixed_in
+	 * default: slug,title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of plugin slugs to ignore.
@@ -141,9 +141,9 @@ class Soter_Command {
 	 * ---
 	 *
 	 * [--fields=<fields>]
-	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * : Comma separated list of fields to show. Valid fields include slug, id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 * ---
-	 * default: title,vuln_type,fixed_in
+	 * default: slug,title,vuln_type,fixed_in
 	 *
 	 * @subcommand check-theme
 	 *
@@ -183,9 +183,9 @@ class Soter_Command {
 	 * ---
 	 *
 	 * [--fields=<fields>]
-	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * : Comma separated list of fields to show. Valid fields include slug, id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 * ---
-	 * default: title,vuln_type,fixed_in
+	 * default: slug,title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of theme slugs to ignore.
@@ -235,9 +235,9 @@ class Soter_Command {
 	 * ---
 	 *
 	 * [--fields=<fields>]
-	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * : Comma separated list of fields to show. Valid fields include slug, id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 * ---
-	 * default: title,vuln_type,fixed_in
+	 * default: slug,title,vuln_type,fixed_in
 	 *
 	 * @alias check-wp
 	 * @subcommand check-wordpress
@@ -277,9 +277,9 @@ class Soter_Command {
 	 * ---
 	 *
 	 * [--fields=<fields>]
-	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * : Comma separated list of fields to show. Valid fields include slug, id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 * ---
-	 * default: title,vuln_type,fixed_in
+	 * default: slug,title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of WordPress slugs to ignore - WordPress slugs are equivalent to the version stripped of any non-numeric characters (e.g. 4.7.4 becomes 474).
@@ -326,9 +326,9 @@ class Soter_Command {
 	 * ---
 	 *
 	 * [--fields=<fields>]
-	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * : Comma separated list of fields to show. Valid fields include slug, id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
 	 * ---
-	 * default: title,vuln_type,fixed_in
+	 * default: slug,title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of WordPress slugs to ignore. Note that WordPress slugs are equivalent to the version stripped of any non-numeric characters (e.g. 4.7.4 becomes 474).
@@ -372,7 +372,7 @@ class Soter_Command {
 
 		// Convert vulns to arrays.
 		$for_display = array_map( function( $vuln ) {
-			return $vuln->get_data();
+			return array_merge( [ 'slug' => $vuln->get_slug() ], $vuln->get_data() );
 		}, $vulnerabilities );
 
 		// Timestamps may need to be re-formatted based on requested output method.
