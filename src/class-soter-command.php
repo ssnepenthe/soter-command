@@ -7,6 +7,7 @@ use Soter_Core\Checker_Interface;
 
 class Soter_Command {
 	protected $checker;
+	protected $progress_bar = null;
 
 	public function __construct( Checker_Interface $checker ) {
 		$this->checker = $checker;
@@ -29,32 +30,32 @@ class Soter_Command {
 	 * [--format=<format>]
 	 * : Results output format.
 	 * ---
-	 * default: standard
+	 * default: table
 	 * options:
 	 *   - count
 	 *   - csv
 	 *   - ids
 	 *   - json
-	 *   - standard
 	 *   - table
 	 *   - yaml
-	 *   - yml
 	 * ---
 	 *
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * ---
+	 * default: title,vuln_type,fixed_in
 	 *
 	 * @subcommand check-plugin
 	 *
 	 * @param  array $args       Positional args.
 	 * @param  array $assoc_args Associative args.
 	 */
-	public function check_plugin( $args, $assoc_args ) {
+	public function check_plugin( array $args, array $assoc_args ) {
 		try {
-			$plugin = $args[0];
+			$slug = $args[0];
 			$version = isset( $args[1] ) ? $args[1] : null;
 
-			$response = $this->checker->get_client()->plugins( $plugin );
+			$response = $this->checker->get_client()->plugins( $slug );
 			$vulnerabilities = $response->get_vulnerabilities_by_version( $version );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
@@ -71,20 +72,20 @@ class Soter_Command {
 	 * [--format=<format>]
 	 * : Results output format.
 	 * ---
-	 * default: standard
+	 * default: table
 	 * options:
 	 *   - count
 	 *   - csv
 	 *   - ids
 	 *   - json
-	 *   - standard
 	 *   - table
 	 *   - yaml
-	 *   - yml
 	 * ---
 	 *
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * ---
+	 * default: title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of plugin slugs to ignore.
@@ -94,7 +95,7 @@ class Soter_Command {
 	 * @param  array $_          Unused positional args.
 	 * @param  array $assoc_args Associative args.
 	 */
-	public function check_plugins( $_, $assoc_args ) {
+	public function check_plugins( array $_, array $assoc_args ) {
 		try {
 			$this->start_progress_bar(
 				$assoc_args,
@@ -129,32 +130,32 @@ class Soter_Command {
 	 * [--format=<format>]
 	 * : Results output format.
 	 * ---
-	 * default: standard
+	 * default: table
 	 * options:
 	 *   - count
 	 *   - csv
 	 *   - ids
 	 *   - json
-	 *   - standard
 	 *   - table
 	 *   - yaml
-	 *   - yml
 	 * ---
 	 *
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * ---
+	 * default: title,vuln_type,fixed_in
 	 *
 	 * @subcommand check-theme
 	 *
 	 * @param  array $args       Positional args.
 	 * @param  array $assoc_args Associative args.
 	 */
-	public function check_theme( $args, $assoc_args ) {
+	public function check_theme( array $args, array $assoc_args ) {
 		try {
-			$theme = $args[0];
+			$slug = $args[0];
 			$version = isset( $args[1] ) ? $args[1] : null;
 
-			$response = $this->checker->get_client()->themes( $theme );
+			$response = $this->checker->get_client()->themes( $slug );
 			$vulnerabilities = $response->get_vulnerabilities_by_version( $version );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
@@ -171,20 +172,20 @@ class Soter_Command {
 	 * [--format=<format>]
 	 * : Results output format.
 	 * ---
-	 * default: standard
+	 * default: table
 	 * options:
 	 *   - count
 	 *   - csv
 	 *   - ids
 	 *   - json
-	 *   - standard
 	 *   - table
 	 *   - yaml
-	 *   - yml
 	 * ---
 	 *
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * ---
+	 * default: title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of theme slugs to ignore.
@@ -194,7 +195,7 @@ class Soter_Command {
 	 * @param  array $_          Unused positional args.
 	 * @param  array $assoc_args Associative args.
 	 */
-	public function check_themes( $_, $assoc_args ) {
+	public function check_themes( array $_, array $assoc_args ) {
 		try {
 			$this->start_progress_bar(
 				$assoc_args,
@@ -223,20 +224,20 @@ class Soter_Command {
 	 * [--format=<format>]
 	 * : Results output format.
 	 * ---
-	 * default: standard
+	 * default: table
 	 * options:
 	 *   - count
 	 *   - csv
 	 *   - ids
 	 *   - json
-	 *   - standard
 	 *   - table
 	 *   - yaml
-	 *   - yml
 	 * ---
 	 *
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * ---
+	 * default: title,vuln_type,fixed_in
 	 *
 	 * @alias check-wp
 	 * @subcommand check-wordpress
@@ -244,12 +245,12 @@ class Soter_Command {
 	 * @param  array $args       Positional args.
 	 * @param  array $assoc_args Associative args.
 	 */
-	public function check_wordpress( $args, $assoc_args ) {
+	public function check_wordpress( array $args, array $assoc_args ) {
 		$slug = str_replace( '.', '', $args[0] );
 
 		try {
 			$response = $this->checker->get_client()->wordpresses( $slug );
-			$vulnerabilities = $response->get_vulnerabilities_by_version();
+			$vulnerabilities = $response->get_vulnerabilities();
 
 			$this->display_results( $vulnerabilities, $assoc_args );
 		} catch ( \RuntimeException $e ) {
@@ -265,20 +266,20 @@ class Soter_Command {
 	 * [--format=<format>]
 	 * : Results output format.
 	 * ---
-	 * default: standard
+	 * default: table
 	 * options:
 	 *   - count
 	 *   - csv
 	 *   - ids
 	 *   - json
-	 *   - standard
 	 *   - table
 	 *   - yaml
-	 *   - yml
 	 * ---
 	 *
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * ---
+	 * default: title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of WordPress slugs to ignore - WordPress slugs are equivalent to the version stripped of any non-numeric characters (e.g. 4.7.4 becomes 474).
@@ -288,7 +289,7 @@ class Soter_Command {
 	 * @param  array $_          Unused positional args.
 	 * @param  array $assoc_args Associative args.
 	 */
-	public function check_wordpresses( $_, $assoc_args ) {
+	public function check_wordpresses( array $_, array $assoc_args ) {
 		try {
 			$this->start_progress_bar(
 				$assoc_args,
@@ -314,20 +315,20 @@ class Soter_Command {
 	 * [--format=<format>]
 	 * : Results output format.
 	 * ---
-	 * default: standard
+	 * default: table
 	 * options:
 	 *   - count
 	 *   - csv
 	 *   - ids
 	 *   - json
-	 *   - standard
 	 *   - table
 	 *   - yaml
-	 *   - yml
 	 * ---
 	 *
 	 * [--fields=<fields>]
 	 * : Comma separated list of fields to show. Valid fields include id, title, created_at, updated_at, published_date, vuln_type, fixed_in.
+	 * ---
+	 * default: title,vuln_type,fixed_in
 	 *
 	 * [--ignore=<ignore>]
 	 * : Comma separated list of WordPress slugs to ignore. Note that WordPress slugs are equivalent to the version stripped of any non-numeric characters (e.g. 4.7.4 becomes 474).
@@ -362,186 +363,80 @@ class Soter_Command {
 	 * @param  array                                $assoc_args      Associative args.
 	 */
 	protected function display_results( array $vulnerabilities, array $assoc_args ) {
-		$format = isset( $assoc_args['format'] ) ?
-			$assoc_args['format'] :
-			'standard';
-
-		if ( 'yml' === $format ) {
-			$format = 'yaml';
-		}
-
-		$fields = isset( $assoc_args['fields'] ) ?
-			$assoc_args['fields'] :
-			'title,published_date,fixed_in';
-
-		if ( 'standard' === $format ) {
-			$this->display_standard_results( $vulnerabilities );
-		} else {
-			if ( 'ids' === $format ) {
-				$vulnerabilities = array_map( function( $vuln ) {
-					return $vuln->id;
-				}, $vulnerabilities );
-			} else {
-				$vulnerabilities = array_map( function( $vuln ) {
-					return $vuln->get_data();
-				}, $vulnerabilities );
-			}
-
-			$fields = explode( ',', $fields );
-
-			$allowed = [
-				'id',
-				'title',
-				'created_at',
-				'updated_at',
-				'published_date',
-				'vuln_type',
-				'fixed_in',
-			];
-
-			$invalid = array_values( array_diff( $fields, $allowed ) );
-
-			// Mimics WP-CLI default behavior for invalid params.
-			if ( ! empty( $invalid ) ) {
-				$message = 'Parameter errors:' . "\n";
-
-				if ( 1 === count( $invalid ) ) {
-					$message .= $invalid[0] . ' is not a valid fields value';
-				} else {
-					$message .= implode( ', ', $invalid ) . ' are not valid fields values';
-				}
-
-				WP_CLI::error( $message );
-			}
-
-			WP_CLI\Utils\format_items( $format, $vulnerabilities, $fields );
-		}
-	}
-
-	/**
-	 * Display the results when --format=standard.
-	 *
-	 * @param  Soter_Core\Vulnerability_Interface[] $vulnerabilities List of vulnerabilities.
-	 */
-	protected function display_standard_results( array $vulnerabilities ) {
-		if ( empty( $vulnerabilities ) ) {
-			WP_CLI::log( $this->success( $this->banner(
-				'No vulnerabilities detected!',
-				'SUCCESS'
-			) ) );
-
-			return;
-		}
-
-		$count = count( $vulnerabilities );
-
-		WP_CLI::log( $this->warning( $this->banner( sprintf(
-			'%s %s detected',
-			$count,
-			1 < $count ? 'vulnerabilities' : 'vulnerability'
-		), 'WARNING' ) ) );
-
-		foreach ( $vulnerabilities as $vulnerability ) {
-			WP_CLI::log( $this->title( $vulnerability->title ) );
-
-			if ( ! is_null( $vulnerability->published_date ) ) {
-				WP_CLI::log( sprintf(
-					'Published %s',
-					$vulnerability->published_date->format( 'd F Y' )
-				) );
-			}
-
-			if ( isset( $vulnerability->references->url ) ) {
-				foreach ( $vulnerability->references->url as $url ) {
-					WP_CLI::log( $url );
-				}
-			}
-
-			WP_CLI::log( sprintf(
-				'https://wpvulndb.com/vulnerabilities/%s',
-				$vulnerability->id
-			) );
-
-			if ( is_null( $vulnerability->fixed_in ) ) {
-				WP_CLI::log( $this->warning( 'Not fixed yet' ) );
-			} else {
-				WP_CLI::log( sprintf(
-					'Fixed in v%s',
-					$vulnerability->fixed_in
-				) );
-			}
-
-			WP_CLI::log( '' );
-		}
-	}
-
-	/**
-	 * Creates a multi-line banner for given string.
-	 *
-	 * @param  string $text   String to bannerify.
-	 * @param  string $prefix Text to prefix to $text.
-	 *
-	 * @return string
-	 */
-	protected function banner( $text, $prefix = null ) {
-		if ( ! is_null( $prefix ) ) {
-			$text = sprintf( '%s: %s', $prefix, $text );
-		}
-
-		return sprintf( "\n\n  %s\n", $text );
-	}
-
-	/**
-	 * Colorize a string with a green background.
-	 *
-	 * @param  string $text Text to colorize.
-	 *
-	 * @return string
-	 */
-	protected function success( $text ) {
-		return WP_CLI::colorize(
-			'%2' . $text . '%n' . "\n"
+		// Get format and fields. WP-CLI handles validation for us.
+		$format = WP_CLI\Utils\get_flag_value( $assoc_args, 'format' );
+		$fields = array_map(
+			'trim',
+			explode( ',', WP_CLI\Utils\get_flag_value( $assoc_args, 'fields' ) )
 		);
+
+		// Convert vulns to arrays.
+		$for_display = array_map( function( $vuln ) {
+			return $vuln->get_data();
+		}, $vulnerabilities );
+
+		// Timestamps may need to be re-formatted based on requested output method.
+		$timestamps = [ 'created_at', 'updated_at', 'published_date' ];
+
+		// @todo Gross.
+		switch ( $format ) {
+			case 'table':
+				$for_display = array_map( function( $vuln ) use ( $timestamps ) {
+					foreach ( $timestamps as $timestamp ) {
+						if (
+							isset( $vuln[ $timestamp ] )
+							&& $vuln[ $timestamp ] instanceof \DateTime
+						) {
+							$vuln[ $timestamp ] = $vuln[ $timestamp ]->format(
+								'd F Y'
+							);
+						} else {
+							$vuln[ $timestamp ] = 'UNKNOWN';
+						}
+					}
+
+					// Key should always exist, may be null.
+					if ( ! isset( $vuln['fixed_in'] ) ) {
+						$vuln['fixed_in'] = 'NOT FIXED YET';
+					}
+
+					return $vuln;
+				}, $for_display );
+				break;
+			case 'ids':
+				$for_display = array_map( function( $vuln ) {
+					return isset( $vuln['id'] ) ? $vuln['id'] : 0;
+				}, $for_display );
+				break;
+			default:
+				$for_display = array_map( function( $vuln ) use ( $timestamps ) {
+					foreach ( $timestamps as $timestamp ) {
+						if (
+							isset( $vuln[ $timestamp ] )
+							&& $vuln[ $timestamp ] instanceof \DateTime
+						) {
+							$vuln[ $timestamp ] = $vuln[ $timestamp ]->getTimestamp();
+						}
+					}
+
+					return $vuln;
+				}, $for_display );
+		}
+
+		WP_CLI\Utils\format_items( $format, $for_display, $fields );
 	}
 
-	/**
-	 * Colorize a string blue.
-	 *
-	 * @param  string $text Text to colorize.
-	 *
-	 * @return string
-	 */
-	protected function title( $text ) {
-		return WP_CLI::colorize( '%B' . $text . '%n' );
-	}
-
-	/**
-	 * Colorize a string with a red background.
-	 *
-	 * @param  string $text Text to colorize.
-	 *
-	 * @return string
-	 */
-	protected function warning( $text ) {
-		return WP_CLI::colorize( '%1' . $text . '%n' . "\n" );
-	}
-
-	protected $progress_bar = null;
-	protected $progress_ticker = null;
-
-	protected function start_progress_bar( $assoc_args, $package_count ) {
-		if (
-			! is_null( $this->progress_bar )
-			|| ! is_null( $this->progress_ticker )
-		) {
+	protected function start_progress_bar( array $assoc_args, $package_count ) {
+		if ( ! is_null( $this->progress_bar ) ) {
 			// @todo
 			WP_CLI::error( 'Too much progress for one request!' );
 		}
 
 		if (
 			isset( $assoc_args['format'] )
-			&& 'standard' !== $assoc_args['format']
+			&& 'table' !== $assoc_args['format']
 		) {
+			// We don't need a progress bar for machine readable formats.
 			return;
 		}
 
@@ -550,25 +445,23 @@ class Soter_Command {
 			$package_count
 		);
 
-		$this->progress_ticker = function() use ( $progress_bar ) {
-			$progress_bar->tick();
-		};
-
-		add_action( 'soter_core_check_package_complete', $this->progress_ticker );
+		add_action(
+			'soter_core_check_package_complete',
+			function() use ( $progress_bar) {
+				$progress_bar->tick();
+			}
+		);
 	}
 
 	protected function finish_progress_bar() {
-		if ( is_null( $this->progress_bar ) || is_null( $this->progress_ticker ) ) {
+		if ( is_null( $this->progress_bar ) ) {
 			return;
 		}
-
-		// @todo Probably not necessary to remove action...
-		remove_action( 'soter_core_check_package_complete', $this->progress_ticker );
 
 		$this->progress_bar->finish();
 	}
 
-	protected function get_ignored_slugs( $assoc_args ) {
+	protected function get_ignored_slugs( array $assoc_args ) {
 		$ignored = WP_CLI\Utils\get_flag_value( $assoc_args, 'ignore' );
 
 		if ( ! $ignored ) {
