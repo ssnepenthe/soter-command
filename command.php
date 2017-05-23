@@ -25,7 +25,7 @@ if ( ! function_exists( '_soter_command_init' ) ) {
 
 			$http = new Soter_Core\Cached_Http_Client(
 				new Soter_Core\WP_Http_Client( $ua ),
-				new Soter_Core\WP_Transient_Cache( $GLOBALS['wpdb'], 'soter_command' )
+				new Soter_Core\WP_Transient_Cache( $GLOBALS['wpdb'], 'soter' )
 			);
 
 			$checker = new Soter_Core\Checker(
