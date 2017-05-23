@@ -16,16 +16,22 @@ if ( ! function_exists( '_soter_command_init' ) ) {
 		static $soter_command_initialized = false;
 
 		if ( ! $soter_command_initialized ) {
-			$ua_parts = [
+			$ua = implode( ' | ', [
 				sprintf( '%s (%s)', get_bloginfo( 'name' ), get_home_url() ),
 				'Soter CLI',
 				'v0.1.0',
 				'https://github.com/ssnepenthe/soter-command',
-			];
-			$http = new Soter_Core\WP_Http_Client( implode( ' | ', $ua_parts ) );
-			$cache = new Soter_Core\WP_Transient_Cache( 'soter_command' );
-			$client = new Soter_Core\Api_Client( $http, $cache );
-			$checker = new Soter_Core\Checker( $client );
+			] );
+
+			$http = new Soter_Core\Cached_Http_Client(
+				new Soter_Core\WP_Http_Client( $ua ),
+				new Soter_Core\WP_Transient_Cache( $GLOBALS['wpdb'], 'soter_command' )
+			);
+
+			$checker = new Soter_Core\Checker(
+				new Soter_Core\Api_Client( $http ),
+				new Soter_Core\WP_Package_Manager
+			);
 
 			$command = new Soter_Command\Soter_Command( $checker );
 
