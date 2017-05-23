@@ -459,6 +459,7 @@ class Soter_Command {
 		}
 
 		$this->progress_bar->finish();
+		$this->progress_bar = null;
 	}
 
 	protected function get_ignored_slugs( array $assoc_args ) {
