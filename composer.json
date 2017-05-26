@@ -13,15 +13,9 @@
   },
   "require": {
     "wp-cli/wp-cli": "^1.1",
-    "ssnepenthe/soter-core": "dev-master"
+    "ssnepenthe/soter-core": "^0.1"
   },
   "require-dev": {
     "behat/behat": "~2.5"
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/ssnepenthe/soter-core"
-    }
-  ]
+  }
 }
