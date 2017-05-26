@@ -1,4 +1,9 @@
 <?php
+/**
+ * Registers the Soter command with WP-CLI.
+ *
+ * @package soter-command
+ */
 
 if ( ! class_exists( 'WP_CLI' ) ) {
 	return;
@@ -11,6 +16,11 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 
 // Need function_exists() check because this file is being loaded twice.
 if ( ! function_exists( '_soter_command_init' ) ) {
+	/**
+	 * Create a Soter_Command instance and register it with WP-CLI.
+	 *
+	 * @return void
+	 */
 	function _soter_command_init() {
 		// This file is being loaded twice so let's keep track of initialization.
 		static $soter_command_initialized = false;
@@ -42,7 +52,7 @@ if ( ! function_exists( '_soter_command_init' ) ) {
 			WP_CLI::add_command( 'soter', $command );
 
 			$soter_command_initialized = true;
-		}
+		} // End if().
 	}
 
 	// Delay command registration so we can use get_bloginfo(), get_home_url().

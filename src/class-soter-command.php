@@ -1,14 +1,38 @@
 <?php
+/**
+ * Soter_Command class.
+ *
+ * @package soter-command
+ */
 
 namespace Soter_Command;
 
 use WP_CLI;
 use Soter_Core\Checker_Interface;
 
-class Soter_Command {
+/**
+ * Check a site or individual packages against the WPScan API.
+ */
+class Soter_Command extends WP_CLI_Command {
+	/**
+	 * Checker instance.
+	 *
+	 * @var Checker_Interface
+	 */
 	protected $checker;
+
+	/**
+	 * Progress bar instance.
+	 *
+	 * @var null|\cli\progress\Bar
+	 */
 	protected $progress_bar = null;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param Checker_Interface $checker Checker instance.
+	 */
 	public function __construct( Checker_Interface $checker ) {
 		$this->checker = $checker;
 	}
@@ -372,7 +396,9 @@ class Soter_Command {
 
 		// Convert vulns to arrays.
 		$for_display = array_map( function( $vuln ) {
-			return array_merge( [ 'slug' => $vuln->get_slug() ], $vuln->get_data() );
+			return array_merge( [
+				'slug' => $vuln->get_slug(),
+			], $vuln->get_data() );
 		}, $vulnerabilities );
 
 		// Timestamps may need to be re-formatted based on requested output method.
@@ -421,11 +447,19 @@ class Soter_Command {
 
 					return $vuln;
 				}, $for_display );
-		}
+		} // End switch().
 
 		WP_CLI\Utils\format_items( $format, $for_display, $fields );
 	}
 
+	/**
+	 * Create and prepare a progress bar instance if appropriate for a command.
+	 *
+	 * @param  array   $assoc_args    Associative args received by the command.
+	 * @param  integer $package_count Count of packages being checked by the command.
+	 *
+	 * @return void
+	 */
 	protected function start_progress_bar( array $assoc_args, $package_count ) {
 		if ( ! is_null( $this->progress_bar ) ) {
 			// @todo
@@ -440,19 +474,25 @@ class Soter_Command {
 			return;
 		}
 
-		$this->progress_bar = $progress_bar = WP_CLI\Utils\make_progress_bar(
+		$this->progress_bar = WP_CLI\Utils\make_progress_bar(
 			sprintf( 'Checking %s packages', $package_count ),
 			$package_count
 		);
+		$progress_bar = $this->progress_bar;
 
 		add_action(
 			'soter_core_check_package_complete',
-			function() use ( $progress_bar) {
+			function() use ( $progress_bar ) {
 				$progress_bar->tick();
 			}
 		);
 	}
 
+	/**
+	 * Finish and unset the progress bar instance.
+	 *
+	 * @return void
+	 */
 	protected function finish_progress_bar() {
 		if ( is_null( $this->progress_bar ) ) {
 			return;
@@ -462,6 +502,13 @@ class Soter_Command {
 		$this->progress_bar = null;
 	}
 
+	/**
+	 * Get the list of ignored package slugs from the current command call.
+	 *
+	 * @param  array $assoc_args Associative args received by the command.
+	 *
+	 * @return string[]
+	 */
 	protected function get_ignored_slugs( array $assoc_args ) {
 		$ignored = WP_CLI\Utils\get_flag_value( $assoc_args, 'ignore' );
 
