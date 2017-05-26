@@ -8,6 +8,7 @@
 namespace Soter_Command;
 
 use WP_CLI;
+use WP_CLI_Command;
 use Soter_Core\Checker_Interface;
 
 /**
