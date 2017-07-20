@@ -1,52 +1,82 @@
 ssnepenthe/soter-command
 ========================
 
-A description
+Easily check your plugins, themes and core against the WPScan API from the command line.
 
-[![Build Status](https://travis-ci.org/ssnepenthe/soter-command.svg?branch=master)](https://travis-ci.org/ssnepenthe/soter-command)
+## Installation
 
-Quick links: [Using](#using) | [Installing](#installing) | [Contributing](#contributing)
+Installing this package requires WP-CLI v1.1 or greater. Update to the latest stable release with `wp cli update`.
 
-## Using
+Once you've done so, you can install this package with:
 
+    wp package install git@github.com:ssnepenthe/soter-command.git
 
+## Usage
 
-## Installing
+The following commands are available:
 
-Installing this package requires WP-CLI v1.1.0 or greater. Update to the latest stable release with `wp cli update`.
+```
+wp soter check-plugin <slug> [<version>] [--format=<format>] [--fields=<fields>]
+wp soter check-plugins [--format=<format>] [--fields=<fields>] [--ignore=<ignore>]
 
-Once you've done so, you can install this package with `wp package install ssnepenthe/soter-command`.
+wp soter check-site [--format=<format>] [--fields=<fields>] [--ignore=<ignore>]
 
-## Contributing
+wp soter check-theme <slug> [<version>] [--format=<format>] [--fields=<fields>]
+wp soter check-themes [--format=<format>] [--fields=<fields>] [--ignore=<ignore>]
 
-We appreciate you taking the initiative to contribute to this project.
+wp soter check-wordpress <version> [--format=<format>] [--fields=<fields>]
+wp soter check-wordpresses [--format=<format>] [--fields=<fields>] [--ignore=<ignore>]
+```
 
-Contributing isn’t limited to just code. We encourage you to contribute in the way that best fits your abilities, by writing tutorials, giving a demo at your local meetup, helping other users with their support questions, or revising our documentation.
+`<slug>` is the plugin or theme slug.
 
-### Reporting a bug
+`<version>` is the version string you wish to check.
 
-Think you’ve found a bug? We’d love for you to help us get it fixed.
+`<format>` can be any of `count`, `csv`, `ids`, `json`, `table` or `yaml` - default is `table`. If set to `ids`, it will print a space-separated list of vulnerability IDs as given by the WPScan API.
 
-Before you create a new issue, you should [search existing issues](https://github.com/ssnepenthe/soter-command/issues?q=label%3Abug%20) to see if there’s an existing resolution to it, or if it’s already been fixed in a newer version.
+`<fields>` should be a comma-separated list of fields. Valid fields are `slug`, `id`, `title`, `created_at`, `updated_at`, `published_date`, `vuln_type`, `fixed_in` - default is `slug,title,vuln_type,fixed_in`.
 
-Once you’ve done a bit of searching and discovered there isn’t an open or fixed issue for your bug, please [create a new issue](https://github.com/ssnepenthe/soter-command/issues/new) with the following:
+`<ignore>` should be a comma-separated list of installed package slugs that should not be checked.
 
-1. What you were doing (e.g. "When I run `wp post list`").
-2. What you saw (e.g. "I see a fatal about a class being undefined.").
-3. What you expected to see (e.g. "I expected to see the list of posts.")
+## Examples
 
-Include as much detail as you can, and clear steps to reproduce if possible.
+**Full site check formatted as a table**
 
-### Creating a pull request
+```
+vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-site
 
-Want to contribute a new feature? Please first [open a new issue](https://github.com/ssnepenthe/soter-command/issues/new) to discuss whether the feature is a good fit for the project.
+Checking 22 packages  100% [===============================================================================================] 0:00 / 0:00
++----------------+---------------------------------------------------------------+------------+---------------+
+| slug           | title                                                         | vuln_type  | fixed_in      |
++----------------+---------------------------------------------------------------+------------+---------------+
+| contact-form-7 | Contact Form 7 <= 3.7.1 - Security Bypass                     | AUTHBYPASS | 3.7.2         |
+| contact-form-7 | Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution   | UPLOAD     | 3.5.3         |
+| 4.7.5          | WordPress 2.3-4.7.5 - Host Header Injection in Password Reset | UNKNOWN    | NOT FIXED YET |
++----------------+---------------------------------------------------------------+------------+---------------+
+```
 
-Once you've decided to commit the time to seeing your pull request through, please follow our guidelines for creating a pull request to make sure it's a pleasant experience:
+**Plugin check: All versions of Contact Form 7 formatted as CSV**
 
-1. Create a feature branch for each contribution.
-2. Submit your pull request early for feedback.
-3. Include functional tests with your changes. [Read the WP-CLI documentation](https://wp-cli.org/docs/pull-requests/#functional-tests) for an introduction.
-4. Follow the [WordPress Coding Standards](http://make.wordpress.org/core/handbook/coding-standards/).
+```
+vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-plugin contact-form-7 --format=csv
+slug,title,vuln_type,fixed_in
+contact-form-7,"Contact Form 7 <= 3.7.1 - Security Bypass",AUTHBYPASS,3.7.2
+contact-form-7,"Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution",UPLOAD,3.5.3
+```
 
+**Theme check: Version 1.1 of twentyfifteen, formatted as JSON, display title, vulnerability type and fixed in version**
 
-*This README.md is generated dynamically from the project's codebase using `wp scaffold package-readme` ([doc](https://github.com/wp-cli/scaffold-package-command#wp-scaffold-package-readme)). To suggest changes, please submit a pull request against the corresponding part of the codebase.*
+```
+vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-theme twentyfifteen 1.1 --format=json --fields=title,vuln_type,fixed_in
+[{"title":"Twenty Fifteen Theme <= 1.1 - DOM Cross-Site Scripting (XSS)","vuln_type":"XSS","fixed_in":"1.2"}]
+```
+
+**WordPress check: Version 4.7.5, format as YAML, display title and fixed in version**
+
+```
+vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-wordpress 4.7.5 --format=yaml --fields=title,fixed_in
+---
+-
+  title: 'WordPress 2.3-4.7.5 - Host Header Injection in Password Reset'
+  fixed_in: null
+```
