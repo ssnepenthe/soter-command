@@ -9,11 +9,6 @@ if ( ! class_exists( 'WP_CLI' ) ) {
 	return;
 }
 
-// Temporary - needed until soter-core is ready to go up on Packagist.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-	require_once __DIR__ . '/vendor/autoload.php';
-}
-
 // Need function_exists() check because this file is being loaded twice.
 if ( ! function_exists( '_soter_command_init' ) ) {
 	/**
