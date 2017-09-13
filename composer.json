@@ -12,6 +12,7 @@
     "files": [ "command.php" ]
   },
   "require": {
+    "php": ">=5.4",
     "wp-cli/wp-cli": "^1.1",
     "ssnepenthe/soter-core": "^dev-master"
   },
