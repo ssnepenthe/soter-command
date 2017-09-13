@@ -9,7 +9,7 @@ if ( ! class_exists( 'WP_CLI' ) ) {
 	return;
 }
 
-// Need function_exists() check because this file is being loaded twice.
+// Need function_exists() check because this file is loaded twice in earlier version of WP-CLI.
 if ( ! function_exists( '_soter_command_init' ) ) {
 	/**
 	 * Create a Soter_Command instance and register it with WP-CLI.
@@ -18,36 +18,33 @@ if ( ! function_exists( '_soter_command_init' ) ) {
 	 */
 	function _soter_command_init() {
 		// This file is being loaded twice so let's keep track of initialization.
-		static $soter_command_initialized = false;
+		static $initialized = false;
 
-		if ( ! $soter_command_initialized ) {
-			$ua = implode( ' | ', [
-				sprintf( '%s (%s)', get_bloginfo( 'name' ), get_home_url() ),
-				'Soter CLI',
-				'v0.1.0',
-				'https://github.com/ssnepenthe/soter-command',
-			] );
+		if ( $initialized ) {
+			return;
+		}
 
-			$http = new Soter_Core\Cached_Http_Client(
-				new Soter_Core\WP_Http_Client( $ua ),
-				new Soter_Core\WP_Transient_Cache(
-					$GLOBALS['wpdb'],
-					'soter',
-					HOUR_IN_SECONDS
-				)
-			);
+		$ua = sprintf(
+			'%s (%s) | Soter CLI | v0.1.0 | https://github.com/ssnepenthe/soter-command',
+			get_bloginfo( 'name' ),
+			get_home_url()
+		);
 
-			$checker = new Soter_Core\Checker(
-				new Soter_Core\Api_Client( $http ),
-				new Soter_Core\WP_Package_Manager
-			);
+		$http = new Soter_Core\Cached_Http_Client(
+			new Soter_Core\WP_Http_Client( $ua ),
+			new Soter_Core\WP_Transient_Cache( 'soter', HOUR_IN_SECONDS )
+		);
 
-			$command = new Soter_Command\Soter_Command( $checker );
+		$checker = new Soter_Core\Checker(
+			new Soter_Core\Api_Client( $http ),
+			new Soter_Core\WP_Package_Manager
+		);
 
-			WP_CLI::add_command( 'soter', $command );
+		$command = new Soter_Command\Soter_Command( $checker );
 
-			$soter_command_initialized = true;
-		} // End if().
+		WP_CLI::add_command( 'soter', $command );
+
+		$initialized = true;
 	}
 
 	// Delay command registration so we can use get_bloginfo(), get_home_url().
