@@ -37,7 +37,7 @@ if ( ! function_exists( '_soter_command_init' ) ) {
 
 		$checker = new Soter_Core\Checker(
 			new Soter_Core\Api_Client( $http ),
-			new Soter_Core\WP_Package_Manager
+			new Soter_Core\WP_Package_Manager()
 		);
 
 		$command = new Soter_Command\Soter_Command( $checker );
