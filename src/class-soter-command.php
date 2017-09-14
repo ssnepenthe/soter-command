@@ -8,7 +8,9 @@
 namespace Soter_Command;
 
 use WP_CLI;
+use DateTime;
 use WP_CLI_Command;
+use RuntimeException;
 use Soter_Core\Checker;
 use Soter_Core\Package;
 use Soter_Core\Vulnerabilities;
@@ -98,7 +100,7 @@ class Soter_Command extends WP_CLI_Command {
 			$vulnerabilities = $this->checker->check_package( $plugin );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
-		} catch ( \RuntimeException $e ) {
+		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
@@ -145,7 +147,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
-		} catch ( \RuntimeException $e ) {
+		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
@@ -198,7 +200,7 @@ class Soter_Command extends WP_CLI_Command {
 			$vulnerabilities = $this->checker->check_package( $theme );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
-		} catch ( \RuntimeException $e ) {
+		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
@@ -245,7 +247,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
-		} catch ( \RuntimeException $e ) {
+		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
@@ -293,7 +295,7 @@ class Soter_Command extends WP_CLI_Command {
 			$vulnerabilities = $this->checker->check_package( $wordpress );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
-		} catch ( \RuntimeException $e ) {
+		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
@@ -340,7 +342,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
-		} catch ( \RuntimeException $e ) {
+		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
@@ -387,7 +389,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
-		} catch ( \RuntimeException $e ) {
+		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
@@ -460,7 +462,7 @@ class Soter_Command extends WP_CLI_Command {
 					foreach ( $timestamps as $timestamp ) {
 						if (
 							isset( $vuln[ $timestamp ] )
-							&& $vuln[ $timestamp ] instanceof \DateTime
+							&& $vuln[ $timestamp ] instanceof DateTime
 						) {
 							$vuln[ $timestamp ] = $vuln[ $timestamp ]->getTimestamp();
 						}
