@@ -85,6 +85,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $args       Positional args.
 	 * @param  array $assoc_args Associative args.
+	 *
+	 * @return void
 	 */
 	public function check_plugin( array $args, array $assoc_args ) {
 		try {
@@ -131,6 +133,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $_          Unused positional args.
 	 * @param  array $assoc_args Associative args.
+	 *
+	 * @return void
 	 */
 	public function check_plugins( array $_, array $assoc_args ) {
 		try {
@@ -182,6 +186,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $args       Positional args.
 	 * @param  array $assoc_args Associative args.
+	 *
+	 * @return void
 	 */
 	public function check_theme( array $args, array $assoc_args ) {
 		try {
@@ -227,6 +233,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $_          Unused positional args.
 	 * @param  array $assoc_args Associative args.
+	 *
+	 * @return void
 	 */
 	public function check_themes( array $_, array $assoc_args ) {
 		try {
@@ -273,6 +281,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $args       Positional args.
 	 * @param  array $assoc_args Associative args.
+	 *
+	 * @return void
 	 */
 	public function check_wordpress( array $args, array $assoc_args ) {
 		try {
@@ -318,6 +328,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $_          Unused positional args.
 	 * @param  array $assoc_args Associative args.
+	 *
+	 * @return void
 	 */
 	public function check_wordpresses( array $_, array $assoc_args ) {
 		try {
@@ -363,6 +375,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $_          Unused positional args.
 	 * @param  array $assoc_args Associative args.
+	 *
+	 * @return void
 	 */
 	public function check_site( array $_, array $assoc_args ) {
 		try {
@@ -383,6 +397,8 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  Vulnerabilities $vulnerabilities List of vulnerabilities.
 	 * @param  array           $assoc_args      Associative args.
+	 *
+	 * @return void
 	 */
 	protected function display_results( Vulnerabilities $vulnerabilities, array $assoc_args ) {
 		// Get format and fields. WP-CLI handles validation for us.
@@ -405,12 +421,13 @@ class Soter_Command extends WP_CLI_Command {
 			], $vulnerability->get_data() );
 		} );
 
-		// Timestamps may need to be re-formatted based on requested output method.
+		// DateTime instances need to be formatted differently based on desired output type.
 		$timestamps = [ 'created_at', 'updated_at', 'published_date' ];
 
 		// @todo Gross.
 		switch ( $format ) {
 			case 'table':
+				// If formatting as table, it will be read by humans so we format as such.
 				$for_display = array_map( function( $vuln ) use ( $timestamps ) {
 					foreach ( $timestamps as $timestamp ) {
 						if (
@@ -423,7 +440,7 @@ class Soter_Command extends WP_CLI_Command {
 						}
 					}
 
-					// Key should always exist, may be null.
+					// Key should always exist, may be null - overwrite to avoid empty table cell.
 					if ( ! isset( $vuln['fixed_in'] ) ) {
 						$vuln['fixed_in'] = 'NOT FIXED YET';
 					}
@@ -432,11 +449,13 @@ class Soter_Command extends WP_CLI_Command {
 				}, $for_display );
 				break;
 			case 'ids':
+				// If formatting for IDs, we only need WPScan vulnerability IDs.
 				$for_display = array_map( function( $vuln ) {
 					return isset( $vuln['id'] ) ? $vuln['id'] : 0;
 				}, $for_display );
 				break;
 			default:
+				// Otherwise it is probably being parsed by a machine to read so use Unix timestamp.
 				$for_display = array_map( function( $vuln ) use ( $timestamps ) {
 					foreach ( $timestamps as $timestamp ) {
 						if (
@@ -464,12 +483,12 @@ class Soter_Command extends WP_CLI_Command {
 	 */
 	protected function start_progress_bar( array $assoc_args, $package_count ) {
 		if ( ! is_null( $this->progress_bar ) ) {
-			// @todo
-			WP_CLI::error( 'Too much progress for one request!' );
+			// Shouldn't ever hit this...
+			WP_CLI::error( 'Something\'s wrong - a progress bar already exists' );
 		}
 
-		if ( isset( $assoc_args['format'] ) && 'table' !== $assoc_args['format'] ) {
-			// We don't need a progress bar for machine readable formats.
+		if ( ! isset( $assoc_args['format'] ) || 'table' !== $assoc_args['format'] ) {
+			// Table format is presumably the only one which will be read by humans.
 			return;
 		}
 
@@ -477,7 +496,6 @@ class Soter_Command extends WP_CLI_Command {
 			sprintf( 'Checking %s packages', $package_count ),
 			$package_count
 		);
-		$progress_bar = $this->progress_bar;
 	}
 
 	/**
@@ -499,7 +517,7 @@ class Soter_Command extends WP_CLI_Command {
 	 *
 	 * @param  array $assoc_args Associative args received by the command.
 	 *
-	 * @return string[]
+	 * @return array
 	 */
 	protected function get_ignored_slugs( array $assoc_args ) {
 		$ignored = WP_CLI\Utils\get_flag_value( $assoc_args, 'ignore' );
