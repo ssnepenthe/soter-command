@@ -72,7 +72,7 @@ vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-theme twentyf
 [{"title":"Twenty Fifteen Theme <= 1.1 - DOM Cross-Site Scripting (XSS)","vuln_type":"XSS","fixed_in":"1.2"}]
 ```
 
-**WordPress check: Version 4.7.5, format as YAML, display title and fixed in version**
+**WordPress check: Version 4.7.5, format as YAML, display id, title and fixed in version**
 
 ```
 vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-wordpress 4.7.5 --format=yaml --fields=id,title,fixed_in
