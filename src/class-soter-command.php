@@ -434,7 +434,7 @@ class Soter_Command extends WP_CLI_Command {
 					foreach ( $timestamps as $timestamp ) {
 						if (
 							isset( $vuln[ $timestamp ] )
-							&& $vuln[ $timestamp ] instanceof \DateTime
+							&& $vuln[ $timestamp ] instanceof DateTime
 						) {
 							$vuln[ $timestamp ] = $vuln[ $timestamp ]->format( 'd F Y' );
 						} else {
