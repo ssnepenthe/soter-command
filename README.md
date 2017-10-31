@@ -34,7 +34,7 @@ wp soter check-wordpresses [--format=<format>] [--fields=<fields>] [--ignore=<ig
 
 `<format>` can be any of `count`, `csv`, `ids`, `json`, `table` or `yaml` - default is `table`. If set to `ids`, it will print a space-separated list of vulnerability IDs as given by the WPScan API.
 
-`<fields>` should be a comma-separated list of fields. Valid fields are `package_slug`, `package_type`, `package_version`, `id`, `title`, `created_at`, `updated_at`, `published_date`, `vuln_type`, `fixed_in` - default is `slug,title,vuln_type,fixed_in`.
+`<fields>` should be a comma-separated list of fields. Valid fields are `package_slug`, `package_type`, `package_version`, `id`, `title`, `created_at`, `updated_at`, `published_date`, `vuln_type`, `fixed_in` - default is `package_type,package_slug,title,vuln_type,fixed_in`.
 
 `<ignore>` should be a comma-separated list of installed package slugs that should not be checked.
 
