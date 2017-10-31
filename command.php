@@ -9,7 +9,11 @@ if ( ! class_exists( 'WP_CLI' ) ) {
 	return;
 }
 
-// Need function_exists() check because this file is loaded twice in earlier version of WP-CLI.
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
+
+// Need function_exists() check because this file is loaded twice in earlier versions of WP-CLI.
 if ( ! function_exists( '_soter_command_init' ) ) {
 	/**
 	 * Create a Soter_Command instance and register it with WP-CLI.
@@ -17,7 +21,7 @@ if ( ! function_exists( '_soter_command_init' ) ) {
 	 * @return void
 	 */
 	function _soter_command_init() {
-		// This file is being loaded twice so let's keep track of initialization.
+		// Just in case...
 		static $initialized = false;
 
 		if ( $initialized ) {
