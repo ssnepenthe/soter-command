@@ -426,9 +426,10 @@ class Soter_Command extends WP_CLI_Command {
 	 */
 	protected function cleanup( $function, Vulnerabilities $vulnerabilities, array $assoc_args ) {
 		$this->finish_progress_bar();
-		$this->display_results( $vulnerabilities, $assoc_args );
 
 		do_action( "soter_command_{$function}_results", $vulnerabilities );
+
+		$this->display_results( $vulnerabilities, $assoc_args );
 	}
 
 	/**
