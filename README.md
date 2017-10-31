@@ -89,7 +89,7 @@ A number of actions are available which allow plugins to implement custom behavi
 
 `soter_command_package_check_complete`: This action is triggered after every individual package has been checked. Callbacks receive a `Soter_Core\Vulnerabilities` object as the first param and a `Soter_Core\Response` object as the second.
 
-`soter_command_{$command}_results`: This action is triggered at the end of every command. `$command` is the name of the command (check-plugin, check-themes, etc.) with `-` replaced with `_` (e.g. `soter_command_check_site_results`). Callbacks receive a `Soter_Core\Vulnerabilities` object.
+`soter_command_{$command}_results`: This action is triggered within each command before the results are displayed. `$command` is the name of the command (check-plugin, check-themes, etc.) with `-` replaced with `_` (e.g. `soter_command_check_site_results`). Callbacks receive a `Soter_Core\Vulnerabilities` object.
 
 ## API Errors
 
