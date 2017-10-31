@@ -12,8 +12,9 @@
     "files": [ "command.php" ]
   },
   "require": {
+    "php": ">=5.4",
     "wp-cli/wp-cli": "^1.1",
-    "ssnepenthe/soter-core": "^0.1"
+    "ssnepenthe/soter-core": "^0.2"
   },
   "require-dev": {
     "behat/behat": "~2.5"
