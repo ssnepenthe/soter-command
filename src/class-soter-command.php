@@ -13,6 +13,7 @@ use WP_CLI_Command;
 use RuntimeException;
 use Soter_Core\Checker;
 use Soter_Core\Package;
+use Soter_Core\Response;
 use Soter_Core\Vulnerabilities;
 
 /**
@@ -46,6 +47,23 @@ class Soter_Command extends WP_CLI_Command {
 			}
 
 			$this->progress_bar->tick();
+		} );
+
+		// Handle errors.
+		$checker->add_post_check_callback( function( Vulnerabilities $_, Response $response ) {
+			if ( ! $response->is_error() ) {
+				return;
+			}
+
+			$message = sprintf(
+				'Error checking %s %s: %s [HTTP %s]',
+				$response->get_package()->get_type(),
+				$response->get_package()->get_slug(),
+				$response->error['message'],
+				$response->error['code'] // Same as $response->get_status()
+			);
+
+			WP_CLI::debug( $message, 'soter-command' );
 		} );
 
 		$this->checker = $checker;
