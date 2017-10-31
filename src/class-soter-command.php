@@ -66,6 +66,13 @@ class Soter_Command extends WP_CLI_Command {
 			WP_CLI::debug( $message, 'soter-command' );
 		} );
 
+		// Entry point for plugins.
+		$checker->add_post_check_callback(
+			function( Vulnerabilities $vulnerabilities, Response $response ) {
+				do_action( 'soter_command_package_check_complete', $vulnerabilities, $response );
+			}
+		);
+
 		$this->checker = $checker;
 	}
 
@@ -118,6 +125,7 @@ class Soter_Command extends WP_CLI_Command {
 			$vulnerabilities = $this->checker->check_package( $plugin );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
+			$this->do_post_check_action( __FUNCTION__, $vulnerabilities );
 		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
@@ -165,6 +173,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
+			$this->do_post_check_action( __FUNCTION__, $vulnerabilities );
 		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
@@ -218,6 +227,7 @@ class Soter_Command extends WP_CLI_Command {
 			$vulnerabilities = $this->checker->check_package( $theme );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
+			$this->do_post_check_action( __FUNCTION__, $vulnerabilities );
 		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
@@ -265,6 +275,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
+			$this->do_post_check_action( __FUNCTION__, $vulnerabilities );
 		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
@@ -313,6 +324,7 @@ class Soter_Command extends WP_CLI_Command {
 			$vulnerabilities = $this->checker->check_package( $wordpress );
 
 			$this->display_results( $vulnerabilities, $assoc_args );
+			$this->do_post_check_action( __FUNCTION__, $vulnerabilities );
 		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
@@ -360,6 +372,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
+			$this->do_post_check_action( __FUNCTION__, $vulnerabilities );
 		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
@@ -407,6 +420,7 @@ class Soter_Command extends WP_CLI_Command {
 
 			$this->finish_progress_bar();
 			$this->display_results( $vulnerabilities, $assoc_args );
+			$this->do_post_check_action( __FUNCTION__, $vulnerabilities );
 		} catch ( RuntimeException $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
@@ -491,6 +505,18 @@ class Soter_Command extends WP_CLI_Command {
 		} // End switch().
 
 		WP_CLI\Utils\format_items( $format, $for_display, $fields );
+	}
+
+	/**
+	 * Trigger a command-specific, post-check action.
+	 *
+	 * @param  string          $command         The current soter command.
+	 * @param  Vulnerabilities $vulnerabilities List of vulnerabilities.
+	 *
+	 * @return void
+	 */
+	protected function do_post_check_action( $command, Vulnerabilities $vulnerabilities ) {
+		do_action( "soter_command_{$command}_results", $vulnerabilities );
 	}
 
 	/**
