@@ -82,3 +82,30 @@ vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-wordpress 4.7
   title: 'WordPress 2.3-4.7.5 - Host Header Injection in Password Reset'
   fixed_in: null
 ```
+
+## API Errors
+
+It is recommended to occasionally run a full site check with `--debug=soter-command`.
+
+This will notify you if you have received any error responses from the API:
+
+```
+vagrant@vvv:/srv/www/wordpress-default/public_html$ wp soter check-site --debug=soter-command
+Checking 28 packages  3  % [===>                                                                                              ] 0:00 / 0:00
+Debug: Error checking plugin recaptcha-for-wp: Non-200 status code received [HTTP 404] (1.279s)
+Debug: Error checking plugin terms-archive: Non-200 status code received [HTTP 404] (1.282s)
+Debug: Error checking plugin wp-hashids: Non-200 status code received [HTTP 404] (1.283s)
+Debug: Error checking theme tf-child: Non-200 status code received [HTTP 404] (1.285s)
+Checking 28 packages  100% [==================================================================================================] 0:00 / 0:00
++--------------+--------------+---------------------------------------------------------------+-----------+---------------+
+| package_type | package_slug | title                                                         | vuln_type | fixed_in      |
++--------------+--------------+---------------------------------------------------------------+-----------+---------------+
+| wordpress    | 482          | WordPress 2.3-4.8.2 - Host Header Injection in Password Reset | UNKNOWN   | NOT FIXED YET |
++--------------+--------------+---------------------------------------------------------------+-----------+---------------+
+```
+
+Possible errors include a non-200 status code, a non-JSON response body, an invalid JSON response body and a response that does not match the requested package.
+
+Non-200 status codes tend to pop up for (but are not limited to) custom plugins and themes. When that is the case, they should be ignored via the `ignore` option via either the command line (e.g. `--ignore=comma,separated,slugs`) or by overriding the command defaults in `wp-cli.yml`.
+
+It is unlikely that you will ever see any of the other errors, but if you do, please report them to the [WPScan team](https://wpvulndb.com/contact).
